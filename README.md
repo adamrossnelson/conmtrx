@@ -5,6 +5,8 @@ This code is an extension of: https://ideas.repec.org/c/boc/bocode/s458127.html
 
 Also inspired by https://artax.karlin.mff.cuni.cz/r-help/library/caret/html/confusionMatrix.html
 
+Another related resource https://www.statalist.org/forums/forum/general-stata-discussion/general/1371221-n-by-k-contingency-table-for-two-categorical-variable-sensitivity-specificity-ppv-npv-accuracy-calculations
+
 ## Quick install.
 
 Use the following to install from command line:
