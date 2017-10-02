@@ -26,7 +26,7 @@ program conmtrx
 			local dist= r(ndistinct)
 			qui sum `2'
 			if r(min) == 0 & r(max) == 1 & `dist' == 2 {
-				di "Specified variables binary. Producing confusion matrix."
+				di "{cmd:{ul:Specified variables binary. Producing confusion matrix.}}"
 				tab `1' `2', row matcell(miscmat)
 				local trueneg = miscmat[1,1]
 				local falseneg = miscmat[1,2]
@@ -36,19 +36,19 @@ program conmtrx
 				local rout = 2
 			}
 			else {
-				di "Second variable not binary. Values must be 0 or 1."
+				di "{cmd:Second variable not binary. Values must be 0 or 1.}"
 				local rout = 1
 			}
 		}
 		else {
-			di "First variable not binary. Values must be 0 or 1."
+			di "{cmd:First variable not binary. Values must be 0 or 1.}"
 			local rout = 1
 		}
 	}
 	if `rout' < 2 {	
-		di "Appropriate variables not specified."
+		di "{cmd:Appropriate variables not specified.}"
 	}
 	else {
-		di " - conmtrx - Command was a succss."
+		di "{cmd:{it: - conmtrx - }Command was a succss.}"
 	}
 end
