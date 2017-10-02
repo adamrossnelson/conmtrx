@@ -18,9 +18,14 @@ copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/master/conmtrx.ado
 ## Usage
 
 ```
-conmtrx rowvar colvar
+conmtrx rowvar(*binary*) colvar(*binary*)
 ```
 Where rowvar is generally the predicted outcome while colvar is generally the actual outcome.
+
+Previously with `classtabi' the syntax was:
+```
+classtabi */#a /#b /#c /#d* [, **row**label(*string*) **col**label(*string*)]
+```
 
 ## Demonstration output
 ```
