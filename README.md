@@ -26,8 +26,9 @@ Previously with `classtabi' the syntax was:
 ```
 classtabi #a #b #c #d [, rowlabel(string) collabel(string)]
 ```
-Where:
-|                                         |                                            |
+Where each of the four figure representes one of the four possibilities.
+
+|     Negatives                           |     Positives                              |
 |-----------------------------------------|--------------------------------------------|
 | #a -- disease=0, test=0 (true negative) | #b -- disease=0, test=1 (false positive)   |
 | #c -- disease=1, test=0 (false negative)| #d -- disease=1, test=1 (true positive)    |
