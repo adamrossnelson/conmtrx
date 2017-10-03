@@ -41,7 +41,7 @@ program conmtrx
 				local falseneg = miscmat[1,2]
 				local falspos = miscmat[2,1]
 				local truepos = miscmat[2,2]
-				classtabi `trueneg' `falseneg' `falspos' `truepos', rowlabel("`3'") collabel("`4'")
+				classtabi `trueneg' `falseneg' `falspos' `truepos', rowlabel(`3') collabel(`4')
 				local rout = 2
 			}
 			else {
