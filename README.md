@@ -18,9 +18,9 @@ copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/master/conmtrx.ado
 ## Usage
 
 ```
-conmtrx rowvar(binary) colvar(binary) [, rowlabel(string) collabel(string)]
+conmtrx rowvar(binary) colvar(binary) [rowtitle coltitle]
 ```
-Where rowvar is generally the predicted outcome while colvar is generally the actual outcome. Optionally, labels for the row and column may be specified.
+Where rowvar is generally the predicted outcome while colvar is generally the actual outcome. Optionally `conmtrx` accepts a `rowtitle` and `coltitle`. If no row or column title specified the defaults are `Predicted` and `Actual`.
 
 Previously with `classtabi' the syntax was:
 ```
