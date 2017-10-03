@@ -18,20 +18,26 @@ copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/master/conmtrx.ado
 ## Usage
 
 ```
-conmtrx rowvar(binary) colvar(binary)
+conmtrx rowvar(binary) colvar(binary) [, rowlabel(string) collabel(string)]
 ```
-Where rowvar is generally the predicted outcome while colvar is generally the actual outcome.
+Where rowvar is generally the predicted outcome while colvar is generally the actual outcome. Optionally, labels for the row and column may be specified.
 
 Previously with `classtabi' the syntax was:
 ```
 classtabi #a #b #c #d [, rowlabel(string) collabel(string)]
 ```
-Where each of the four figure representes one of the four possibilities.
+Where each of the four figure (`#a #b #c #d`) represente one of the four probabilities.
 
 |     Negatives                           |     Positives                              |
 |-----------------------------------------|--------------------------------------------|
 | #a -- disease=0, test=0 (true negative) | #b -- disease=0, test=1 (false positive)   |
 | #c -- disease=1, test=0 (false negative)| #d -- disease=1, test=1 (true positive)    |
+
+## Also requires
+
+Also requires `distinct` which can be installed with `ssc install distinct` and `classtabi` also available using `ssc install classtabi`.
+
+However `conmtrx` will check for, and if not found install `distinct` and `classtabi`.
 
 ## Demonstration output
 ```

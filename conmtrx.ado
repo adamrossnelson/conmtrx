@@ -7,6 +7,15 @@
 // Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
 
 program conmtrx
+
+	if "`3'" == "" {
+		local 3 = "Predicted"
+	}
+
+	if "`4'" == "" {
+		local 4 = "Actual"
+	}
+
 	capture which distinct
 	if _rc {
 		ssc install distinct
