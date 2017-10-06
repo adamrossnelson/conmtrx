@@ -1,3 +1,14 @@
+# Development Branch
+
+This branch under development. Intended to merge code `conmtrx.ado` with code from `classtabi.ado`. Final product will include:
+* simplified output 
+* breakout statistic describing "incorrectly classified"
+* the option to either:
+* * give probabilities - OR -
+* * give `y` and `x` variables.
+
+**Below includes information from `readme.md` at time of branch.**
+
 # conmtrx.ado
 Simplifies confusion matrix output for Stata.
 
