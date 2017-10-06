@@ -1,10 +1,13 @@
+*! Origin date     : October 2, 2017
+*! Original author : Adam Ross Nelson
+*! Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
+*! Modified to reference - classtabi -
+
+
 // Program that simplifies syntax of the classtabi package.
 // Instead of classtabi #a #b #c #d [, rowlabel(string) collabel(string)]
 // Simplified syntax is conmtrx rowvar colvar.
 //
-// Origin date     : October 2, 2017
-// Original author : Adam Ross Nelson
-// Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
 
 program conmtrx
 
@@ -41,7 +44,7 @@ program conmtrx
 				local falseneg = miscmat[1,2]
 				local falspos = miscmat[2,1]
 				local truepos = miscmat[2,2]
-				classtabi `trueneg' `falseneg' `falspos' `truepos', rowlabel(`3') collabel(`4')
+				classtabi2 `trueneg' `falseneg' `falspos' `truepos', rowlabel(`3') collabel(`4')
 				local rout = 2
 			}
 			else {
