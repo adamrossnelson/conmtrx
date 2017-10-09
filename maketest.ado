@@ -1,7 +1,16 @@
+*! Origin date     : October 2, 2017
+*! Original author : Adam Ross Nelson
+*! Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
+*! Dependency      : ssc install classtabi
+
 capture program drop maketest
 program maketest
-	version 13
-	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string) VARiables(integer 999) PROBabilities(integer 999)]
+	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string)]
+
+	capture which classtabi
+	if _rc {
+		ssc install classtabi
+	}
 
 	if "`rowlabel'" == "" {
 		local rowlabel = "Predicted"
@@ -43,11 +52,18 @@ program maketest
 				qui sum `2'
 				if r(min) == 0 & r(max) == 1 {
 					di "{ul:Specified variables binary. Producing confusion matrix.}"
+					
+					local oldy: variable label `1'
+					local oldx: variable label `2'
+					label variable `1' "`rowlabel'"
+					label variable `2' "`collabel'"
 					tab `1' `2', row rowsort matcell(miscmat)
 					local trueneg = miscmat[1,1]
 					local falseneg = miscmat[1,2]
 					local falspos = miscmat[2,1]
 					local truepos = miscmat[2,2]
+					label variable `1' "`oldy'"
+					label variable `2' "`oldx'"
 					classtabi2 `trueneg' `falseneg' `falspos' `truepos', rowlabel(`rowlabel') collabel(`collabel')
 					local rout = 2
 				}
@@ -88,5 +104,5 @@ program maketest
 		di in smcl as error "ERROR: `tally' arguments specified. Too few arguments."
 		exit = 102
 	}
-	di "{green:{it: - conmtrx - }Command was a succss.}"
+	di "{it: - conmtrx - }Command was a success."
 end
