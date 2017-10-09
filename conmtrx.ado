@@ -7,14 +7,6 @@ capture program drop conmtrx
 program conmtrx
 	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string)]
 
-	di "Dependency Note:"
-	di "copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev/classtabi2.ado `c(sysdir_plus)'"
-
-	capture which classtabi
-	if _rc {
-		ssc install classtabi
-	}
-
 	if "`rowlabel'" == "" {
 		local rowlabel = "Predicted"
 	}
