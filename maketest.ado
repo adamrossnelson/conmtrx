@@ -2,13 +2,18 @@
 *! Original author : Adam Ross Nelson
 *! Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
 *! Dependency      : ssc install classtabi
+*! Related         : copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev/classtabi2.ado
 
 capture program drop maketest
 program maketest
 	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string)]
 
+	di "Dependency Note:"
+	di "copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev/classtabi2.ado `c(sysdir_plus)'"
+
 	capture which classtabi
 	if _rc {
+		copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev/classtabi2.ado `c(sysdir_plus)'
 		ssc install classtabi
 	}
 
@@ -51,7 +56,7 @@ program maketest
 				local dist= r(ndistinct)
 				qui sum `2'
 				if r(min) == 0 & r(max) == 1 {
-					di "{ul:Specified variables binary. Producing confusion matrix.}"
+					di "{green:{ul:Specified variables binary. Producing confusion matrix.}}"
 					
 					local oldy: variable label `1'
 					local oldx: variable label `2'
