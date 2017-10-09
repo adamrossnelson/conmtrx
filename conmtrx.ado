@@ -7,6 +7,11 @@ capture program drop conmtrx
 program conmtrx
 	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string)]
 
+	capture which classtabi
+	if _rc {
+		ssc install classtabi
+	}
+
 	if "`rowlabel'" == "" {
 		local rowlabel = "Predicted"
 	}
