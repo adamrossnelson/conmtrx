@@ -112,8 +112,12 @@ program define classtabi3, rclass
 
     di    in gr `"False positive rate"' _col(33) `"B/(A+B)"'
           in ye %8.2f return(P_0p) `"%"' _col(55) _n
+          in gr `"  aka: Inverse Specificity"' _col(33) `""'
+          in ye `""'  _col(55) _n
           in gr `"False negative rate"' _col(33) `"C/(C+D)"'
-          in ye %8.2f return(P_1n) `"%"'  _col(55);
+          in ye %8.2f return(P_1n) `"%"'  _col(55) _n
+          in gr `"  aka: Inverse Sensitivity"' _col(33) `""'
+          in ye `""'  _col(55);
 
     di    in smcl in gr "{hline 49}"  ;
 
