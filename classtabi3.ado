@@ -57,6 +57,7 @@ program define classtabi3, rclass
 		tabi `1' `2' \ `3' `4'				
 
 		// Classification calculations and save r()
+		ret scalar p_prev = ((`2'+`4')/(`1'+`2'+`3'+`4'))*100                           /* Prevalence                   */
 		ret scalar P_corr = ((`1'+`4')/(`1'+`2'+`3'+`4'))*100 							/* overall correctly classified	*/
 		ret scalar P_icor = ((`2'+`3')/(`1'+`2'+`3'+`4'))*100 							/* overall incorrecly classified	*/
 		ret scalar P_p1 = (`4'/(`3'+`4'))*100     										/* sensitivity          		*/
@@ -96,7 +97,9 @@ program define classtabi3, rclass
 
 	di    in smcl in gr "{hline 49}" ;
 
-    di    in gr `"Sensitivity"' _col(33) `"D/(C+D)"'
+    di    in gr `"Prevalence"' _col(33 `"(B+D)/(A+B+C+D))"'
+		  in ye %8.2f return(p_prev) `"%"' _col(55) _n
+		  in gr `"Sensitivity"' _col(33) `"D/(C+D)"'
           in ye %8.2f return(P_p1) `"%"' _col(55) _n
           in gr `"Specificity"' _col(33) `"A/(A+B)"'
           in ye %8.2f return(P_n0) `"%"' _col(55) _n
@@ -118,7 +121,7 @@ program define classtabi3, rclass
           in ye %8.2f return(P_corr) `"%"' _col(55) ;
 
     di    in gr `"Incorrectly classified"' _col(27) `"B+C/(A+B+C+D)"'
-          in ye %8.2f return(P_corr) `"%"' _col(55) ;
+          in ye %8.2f return(P_icor) `"%"' _col(55) ;
 
     di    in smcl in gr "{hline 49}"  ;
 
