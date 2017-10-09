@@ -12,7 +12,6 @@ program conmtrx
 
 	capture which classtabi
 	if _rc {
-		copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev/classtabi2.ado `c(sysdir_plus)'
 		ssc install classtabi
 	}
 
