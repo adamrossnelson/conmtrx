@@ -20,6 +20,9 @@ program conmtrx
 		local collabel = "Actual"
 	}	
 	
+	tokenize `anything'
+ 	local tally : word count `anything'
+
 	if `tally' == 2 {
 		forvalues i = 1/2 {
 			capture confirm numeric variable ``i''
