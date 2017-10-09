@@ -1,25 +1,46 @@
-*! Origin date     : October 2, 2017
+*! X.X.X Adam Ross Nelson 09oct2017 // Updated to reference adhoc classtabi3
+*! X.X.X Adam Ross Nelson 02oct2017 // Original version
 *! Original author : Adam Ross Nelson
 *! Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
-*! Dependency      : classtabi & modified version (classtabi2)
+*! Dependency      : classtabi & modified version (classtabi3)
 
 capture program drop conmtrx
 program conmtrx
-	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string)]
+	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string) VARlab(string)]
 
 	capture which classtabi
 	if _rc {
 		ssc install classtabi
 	}
 
-	if "`rowlabel'" == "" {
-		local rowlabel = "Predicted"
+	if "`varlab'" != "" & ("`rowlabel'" != "" | "`collabel'" != "") {
+		di in smcl as error "ERROR: Option conflict {ul:row}label or {ul:col}label may not be specified with -{ul:var}lab-option."
+		exit = 452
 	}
 
-	if "`collabel'" == "" {
-		local collabel = "Actual"
-	}	
+	if "`varlab'" == "" {
+		if "`rowlabel'" == "" {
+			local rowlabel = "Reference Classification"
+		}
+
+		if "`collabel'" == "" {
+			local collabel = "Classification Test Result"
+		}	
+	}
 	
+	local 2 = subinstr("`2'",",","",.)
+
+	if "`varlab'" == "yes" {
+		local rowlabel: variable label `2'
+		local collabel: variable label `1'
+	}
+	else if "`varlab'" != "" {
+		di in smcl as error "ERROR: Option -{ul:var}lab- incorrecly specified. Case-sensitive. Option"
+		di in smcl as error "var(yes) or varlab(yes) to display variable labels in output."
+		exit = 452
+	}
+
+
 	tokenize `anything'
  	local tally : word count `anything'
 
@@ -42,19 +63,12 @@ program conmtrx
 				qui sum `2'
 				if r(min) == 0 & r(max) == 1 {
 					di "{green:{ul:Specified variables binary. Producing confusion matrix.}}"
-					
-					local oldy: variable label `1'
-					local oldx: variable label `2'
-					label variable `1' "`rowlabel'"
-					label variable `2' "`collabel'"
-					tab `1' `2', row rowsort matcell(miscmat)
+					qui tab `1' `2', row matcell(miscmat)
 					local trueneg = miscmat[1,1]
 					local falseneg = miscmat[1,2]
 					local falspos = miscmat[2,1]
 					local truepos = miscmat[2,2]
-					label variable `1' "`oldy'"
-					label variable `2' "`oldx'"
-					classtabi2 `trueneg' `falseneg' `falspos' `truepos', rowlabel(`rowlabel') collabel(`collabel')
+					classtabi3 `trueneg' `falspos' `falseneg' `truepos', rowlabel(`rowlabel') collabel(`collabel')
 					local rout = 2
 				}
 				else {
@@ -80,7 +94,7 @@ program conmtrx
 				exit = 452
 			}
 		}
-		classtabi `1' `2' `3' `4', rowlabel(`rowlabel') collabel(`collabel')
+		classtabi3 `1' `2' `3' `4', rowlabel(`rowlabel') collabel(`collabel')
 	}
 	else if (`tally' == 3) {
 		di in smcl as error "ERROR: `tally' arguments specified. Must specify 2 variables or 4 probabilities arguments."
