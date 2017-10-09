@@ -20,19 +20,6 @@ program conmtrx
 		local collabel = "Actual"
 	}	
 	
-	di "`anything'"
-	di "`rowlabel'"
-	di "`collabel'"
-	di "`variables'"
-	di "`probabilities'"
-	
-	tokenize `anything'
-	local tally : word count `anything'
-	
-	di "`tally'"
-	di "`1'"
-	di "`2'"
-	
 	if `tally' == 2 {
 		forvalues i = 1/2 {
 			capture confirm numeric variable ``i''
