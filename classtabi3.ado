@@ -97,7 +97,7 @@ program define classtabi3, rclass
 
 	di    in smcl in gr "{hline 49}" ;
 
-    di    in gr `"Prevalence"' _col(33 `"(B+D)/(A+B+C+D))"'
+    di    in gr `"Prevalence"' _col(33) `"(B+D)/(A+B+C+D))"'
 		  in ye %8.2f return(p_prev) `"%"' _col(55) _n
 		  in gr `"Sensitivity"' _col(33) `"D/(C+D)"'
           in ye %8.2f return(P_p1) `"%"' _col(55) _n
