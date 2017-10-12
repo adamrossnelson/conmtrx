@@ -57,7 +57,7 @@ program define classtabi3, rclass
 		tabi `1' `2' \ `3' `4'				
 
 		// Classification calculations and save r()
-		ret scalar p_prev = ((`2'+`4')/(`1'+`2'+`3'+`4'))*100                           /* Prevalence                   */
+		ret scalar p_prev = ((`3'+`4')/(`1'+`2'+`3'+`4'))*100                           /* Prevalence                   */
 		ret scalar P_corr = ((`1'+`4')/(`1'+`2'+`3'+`4'))*100 							/* overall correctly classified	*/
 		ret scalar P_icor = ((`2'+`3')/(`1'+`2'+`3'+`4'))*100 							/* overall incorrecly classified	*/
 		ret scalar P_p1 = (`4'/(`3'+`4'))*100     										/* sensitivity          		*/
