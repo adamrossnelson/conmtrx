@@ -1,12 +1,12 @@
 *! X.X.X Adam Ross Nelson 09oct2017 // Updated to reference classtabi3
 *! X.X.X Adam Ross Nelson 02oct2017 // Original version
 *! Original author : Adam Ross Nelson
-*! Maintained at   : https://raw.githubusercontent.com/adamrossnelson/conmtrx.ado/
+*! Maintained at   : https://github.com/adamrossnelson/conmtrx/
 *! Dependency      : classtabi & modified version (classtabi3)
 
 capture program drop conmtrx
 program conmtrx
-	version 11.0
+	version 14.0
 	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string) VARlab(string)]
 
 	capture which classtabi3

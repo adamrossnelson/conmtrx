@@ -1,5 +1,6 @@
 *! X.X.X Adam Ross Nelson 09oct2017 // Added Incorrecly classified output.
 *!                                  // Added 3 suffix to name.
+*!                                  // https://github.com/adamrossnelson/conmtrx/
 *! 2.0.1 Ariel Linden 05oct2017 // accepted edits by NJC                                                                       
 *! 2.0.0 Ariel Linden 03oct2017 // fixed bug occurring when cell value is 0
 *!                              // fixed output label for "correctly classified"
