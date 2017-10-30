@@ -1,5 +1,5 @@
 # conmtrx.ado
-Simplifies confusion matrix output for Stata.
+Produces confusion matrix and related statistics.
 
 This code is an extension of: https://ideas.repec.org/c/boc/bocode/s458127.html
 
@@ -11,22 +11,26 @@ Another related resource https://www.statalist.org/forums/forum/general-stata-di
 
 Use the following to install from command line:
 
-```
-copy https://raw.githubusercontent.com/adamrossnelson/conmtrx/master/conmtrx.ado "`c(sysdir_plus)'"
+```Stata
+net install conmtrx from(https://raw.githubusercontent.com/adamrossnelson/conmtrx/master)
 ```
 
 ## Usage
 
 ```
-conmtrx rowvar(binary) colvar(binary) [rowtitle coltitle]
+conmtrx rowvar(binary) colvar(binary)[, ROWlabel(string) COLlabel(string) VARlab(yes)]
 ```
-Where rowvar is generally the predicted outcome while colvar is generally the actual outcome. Optionally `conmtrx` accepts a `rowtitle` and `coltitle`. If no row or column title specified the defaults are `Predicted` and `Actual`.
+Where rowvar is generally the predicted outcome while colvar is generally the actual outcome. Optionally `conmtrx` accepts a `ROWlabel(string)` and `COLlabel(string)`. 
+
+Alternatively, `conmtrx` also accepts a `VARlab(yes)` option which will instruct conmtrx to use `rowvar(binary)` and `colvar(binary)` value lables.
+
+If row or column title specified, and `VARlab(yes)` not specified, the defaults are `Predicted` and `Actual`.
 
 Previously with `classtabi' the syntax was:
-```
+```Stata
 classtabi #a #b #c #d [, rowlabel(string) collabel(string)]
 ```
-Where each of the four figure (`#a #b #c #d`) represente one of the four probabilities.
+Where each of the four figures (`#a #b #c #d`) represente one of the four probabilities.
 
 |     Negatives                           |     Positives                              |
 |-----------------------------------------|--------------------------------------------|
@@ -35,9 +39,9 @@ Where each of the four figure (`#a #b #c #d`) represente one of the four probabi
 
 ## Also requires
 
-Also requires `distinct` which can be installed with `ssc install distinct` and `classtabi` also available using `ssc install classtabi`.
+Erlier versions required `distinct` which can be installed with `ssc install distinct` and `classtabi` also available using `ssc install classtabi`.
 
-However `conmtrx` will check for, and if not found install `distinct` and `classtabi`.
+Revised versions check for binary status using `capture confirm capture confirm numeric variable varname` and `capture assert varname == 1 | varname == 0`.
 
 ## Demonstration output
 ```
@@ -96,4 +100,4 @@ ROC area                                  0.4375
 
 ## Known limitation
 
-Does not support if statements.
+Does not support `if` and `in` options/statements.

@@ -1,0 +1,9 @@
+d 'conmtrx': module to provide confusion matrix and related statistics.
+d
+d Distribution-Date: November 2017
+d
+d Author:  Adam Ross Nelson
+d Support: https://github.com/adamrossnelson/conmtrx
+d
+f classtabi3.ado
+f conmtrx.ado
