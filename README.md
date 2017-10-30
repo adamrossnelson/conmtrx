@@ -7,12 +7,19 @@ Also inspired by https://artax.karlin.mff.cuni.cz/r-help/library/caret/html/conf
 
 Another related resource https://www.statalist.org/forums/forum/general-stata-discussion/general/1371221-n-by-k-contingency-table-for-two-categorical-variable-sensitivity-specificity-ppv-npv-accuracy-calculations
 
-## Quick install.
+## Installation
 
 Use the following to install from command line:
 
 ```Stata
-net install conmtrx from(https://raw.githubusercontent.com/adamrossnelson/conmtrx/master)
+net install conmtrx, from(https://raw.githubusercontent.com/adamrossnelson/conmtrx/master)
+```
+
+Use the following to check for installation (`which` command works to check for any package). Use `ado` command to list all installed packages.
+```Stata
+which classtabi3
+
+which conmtrx
 ```
 
 ## Usage
@@ -24,7 +31,7 @@ Where rowvar is generally the predicted outcome while colvar is generally the ac
 
 Alternatively, `conmtrx` also accepts a `VARlab(yes)` option which will instruct conmtrx to use `rowvar(binary)` and `colvar(binary)` value lables.
 
-If row or column title specified, and `VARlab(yes)` not specified, the defaults are `Predicted` and `Actual`.
+If row or column title specified, and `VARlab(yes)` not specified, the defaults are `Classification Test Result` and `Reference Classification`.
 
 Previously with `classtabi' the syntax was:
 ```Stata
