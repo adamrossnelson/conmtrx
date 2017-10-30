@@ -1,5 +1,5 @@
 v 0.1.0
-d 'CONMTRX': search, install, and uninstall Stata packages with a particular    {break}
-d version (release) as well as their dependencies from 
+d 'conmtrx': module to provide confusion matrix and related statistics.
+d version and support from
 d {browse "https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev":GitHub} website
 p conmtrx

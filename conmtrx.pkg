@@ -1,8 +1,9 @@
-d 'CONMTRX': search, install, and uninstall Stata packages with a particular    {break}
-d version (release) as well as their dependencies from 
-d {browse "https://raw.githubusercontent.com/adamrossnelson/conmtrx/dev":GitHub} website
+d 'conmtrx': module to provide confusion matrix and related statistics.
 d
-d Distribution-Date: 20171008
+d Distribution-Date: November 2017
 d
-F classtabi3.ado
-F conmtrx.ado
+d Author:  Adam Ross Nelson
+d Support: https://github.com/adamrossnelson/conmtrx
+d
+f classtabi3.ado
+f conmtrx.ado
