@@ -9,14 +9,6 @@ program conmtrx
 	version 14.0
 	syntax anything(id="argument numlist") [if] [in] [, ROWlabel(string) COLlabel(string) VARlab(string)]
 
-	capture which classtabi3
-	if _rc {
-		di in smcl as error "ERROR: conmtrx requires classtabi3. Action required:
-		di in smcl as error "     ssc install classtabi3"
-		// ssc install classtabi
-		exit = 452
-	}
-
 	if "`varlab'" != "" & ("`rowlabel'" != "" | "`collabel'" != "") {
 		di in smcl as error "ERROR: Option conflict {ul:row}label or {ul:col}label may not be specified with -{ul:var}lab-option."
 		exit = 452
