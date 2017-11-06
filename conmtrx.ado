@@ -2,7 +2,7 @@
 *! X.X.X Adam Ross Nelson 02oct2017 // Original version
 *! Original author : Adam Ross Nelson
 *! Maintained at   : https://github.com/adamrossnelson/conmtrx/
-*! Dependency      : classtabi & modified version (classtabi3)
+*! Dependency      : classtabi, a modified version (classtabi3)
 
 capture program drop conmtrx
 program conmtrx
