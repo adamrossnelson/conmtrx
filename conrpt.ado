@@ -4,11 +4,14 @@ capture program drop conrpt
 program define conrpt, rclass byable(recall)
 	// Version control
 	version 15
+	preserve
 
 	// Syntax statement limits first argument to variable name which must be
 	// binary. Subsequent arguments varlist of one or more vars which also must
 	// be binary. Includes support for if and in qualifiers.
-	syntax varlist(min=2 numeric) [if] [in] [,NOPrint FORmat(passthru) MATrix(string)]
+	syntax varlist(min=2 numeric) [if] [in] ///
+	[,NOPrint FORmat(passthru) MATrix(string) ///
+	COIn(string) PROBs(string asis)]
 	
 	local sp char(13) char(10) // Define spacer.
 
@@ -35,66 +38,75 @@ program define conrpt, rclass byable(recall)
 			error 452
 		}
 	}
-	
-	// Model table template
-	// | testname    | actual neg  | actual pos  | true neg    | false pos   | 
-	// |             | tested neg  | tested pos  | false neg   | true pos    |
 
-    // ObservedNeg
-	// ObservedPos
-	// TestedNeg
-	// TestedPos
-	// TrueNeg
-	// FalsePos
-	// FalseNeg
-	// FalsePos
-
-
+	// Test that coin option correction specified
+	if "`coin'" != "" & "`coin'" != "off" {
+		di as error "ERROR: Coin option incorrectly specified."
+	}
 
 	// Build Matricies
-	local varlist2 =  substr("`varlist'",strpos("`varlist'"," "),strlen("`varlist'") - strpos("`thelist'"," "))
-	foreach v of varlist `varlist2' {
-		tempname rmat_`v'
-		matrix `rmat'_`v' = J(2, 4,.)
-		local i 1
-		
+	local varlist2 = substr("`varlist'",strpos("`varlist'"," "),strlen("`varlist'") - strpos("`thelist'"," "))
+	local varlist3 = "`varlist2'"
+	if "`coin'" != "off" {
+		set seed 1000
+		gen srtr = runiform(1,100)
+		local totcoins = 0
+		foreach prob in 25 50 75 {
+			qui{
+				gen p`prob'coin = 0
+				replace p`prob'coin = 1 if srtr >= `prob'
+				local varlist3 = "`varlist3' p`prob'coin"
+				local ++totcoins
+			}
+		}
+	}
+	tempname rmat
+	matrix `rmat' = J(18, `nvar' + `totcoins' - 1,.)
+	local i = 1
+	foreach v of varlist `varlist3' {
 		qui {
 			count if `1' == 0 & `touse'
-			matrix `rmat'_`v'[`i',1] = r(N)
+			matrix `rmat'[1,`i'] = r(N)
 			count if `1' == 1 & `touse'
-			matrix `rmat'_`v'[`i',2] = r(N)
+			matrix `rmat'[2,`i'] = r(N)
 			count if `v' == 0 & `1' == 0 & `touse'
-			matrix `rmat'_`v'[`i',3] = r(N)
+			matrix `rmat'[3,`i'] = r(N)
 			count if `v' == 1 & `1' == 0 & `touse'
-			matrix `rmat'_`v'[`i',4] = r(N)
-			local ++i
+			matrix `rmat'[4,`i'] = r(N)
 			count if `v' == 0 & `touse'
-			matrix `rmat'_`v'[`i',1] = r(N)
+			matrix `rmat'[5,`i'] = r(N)
 			count if `v' == 1 & `touse'
-			matrix `rmat'_`v'[`i',2] = r(N)
+			matrix `rmat'[6,`i'] = r(N)
 			count if `v' == 0 & `1' == 1 & `touse'
-			matrix `rmat'_`v'[`i',3] = r(N)
+			matrix `rmat'[7,`i'] = r(N)
 			count if `v' == 1 & `1' == 1 & `touse'
-			matrix `rmat'_`v'[`i',4] = r(N)
+			matrix `rmat'[8,`i'] = r(N)
 		}
-
-		// matrix rownames `rmat' = `varlist2'
-		matrix colnames `rmat'_`v' = ActualNeg ActualPos TrueNeg FalsePos
-		if "`print'" != "noprint" {
-			local form ", noheader"
-			if "`format'" != "" {
-				local form "`form format'"
-			}
-			di as result "Results for test variable `v'"
-			matrix list `rmat'_`v' `form'
-			di `sp'
-		}
-		if "`matrix'" != "" {
-			matrix `matrix' = `rmat'_`v'
-		}
-		return matrix rmat_`v' = `rmat'_`v'
+		local ++i
 	}
-	return local varname `varlist'
 
+	matrix colnames `rmat' = `varlist3'
+	matrix rownames `rmat' = ObservedNeg ObservedPos TestedNeg TestedPos ///
+	TrueNeg TruePos FalseNeg FalsePos ///
+	Prevalence Sensitivity Specificity PosPredVal NegPredVal ///
+	FalsePosRt FalseNegRt CorrectRt IncorrectRt ROCArea
+	if "`print'" != "noprint" {
+		local form ", noheader"
+		if "`format'" != "" {
+			local form "`form format'"
+		}
+		matrix list `rmat' `form'
+		di `sp'
+	}
+	if "`matrix'" != "" {
+		matrix `matrix' = `rmat'
+	}
+	return matrix rmat = `rmat'              // Return matrix
+	
+	return local varnames `varlist'          // Return full varlist
+	return local testnames `varlist2'        // Return test variables
+	return local obsvar `1'                  // Return observed variable
+
+	restore
 end
 
