@@ -22,6 +22,11 @@ program define conrpt, rclass byable(recall)
 		di as error "ERROR: No observations after if or in qualifier."
 		error 2000
 	}
+	// Test that sample large enough for coins.
+	if `r(N)' < 99 {
+		di as result "WARNING: Coin option less reliable when sample size is low."
+		di as result "         Current sample size is `r(N)'."
+	}
 	
 	// Test number of arguments. Must be at least two.
 	local nvar : word count `varlist'
@@ -49,12 +54,15 @@ program define conrpt, rclass byable(recall)
 	local varlist3 = "`varlist2'"
 	if "`coin'" != "off" {
 		set seed 1000
-		gen srtr = runiform(1,100)
+		gen _srtr = runiform(1,100)
 		local totcoins = 0
-		foreach prob in 25 50 75 {
-			qui{
+		if "`probs'" == "" {
+			local probs 25 50 75
+		}
+		foreach prob in `probs' {
+			qui {
 				gen p`prob'coin = 0
-				replace p`prob'coin = 1 if srtr >= `prob'
+				replace p`prob'coin = 1 if _srtr < `prob'
 				local varlist3 = "`varlist3' p`prob'coin"
 				local ++totcoins
 			}
