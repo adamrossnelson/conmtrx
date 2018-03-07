@@ -10,6 +10,8 @@ program define conrpt, rclass byable(recall)
 	// be binary. Includes support for if and in qualifiers.
 	syntax varlist(min=2 numeric) [if] [in] [,NOPrint FORmat(passthru) MATrix(string)]
 	
+	local sp char(13) char(10) // Define spacer.
+
 	// Tag subsample with temp var touse & test if empty.
 	marksample touse
 	quietly count if `touse'
@@ -38,45 +40,61 @@ program define conrpt, rclass byable(recall)
 	// | testname    | actual neg  | actual pos  | true neg    | false pos   | 
 	// |             | tested neg  | tested pos  | false neg   | true pos    |
 
-	// Build Matrix
-	tempname rmat
-	matrix `rmat' = J((`nvar' * 3) - 3, 4,.)
-	local i 1
+    // ObservedNeg
+	// ObservedPos
+	// TestedNeg
+	// TestedPos
+	// TrueNeg
+	// FalsePos
+	// FalseNeg
+	// FalsePos
+
+
+
+	// Build Matricies
 	local varlist2 =  substr("`varlist'",strpos("`varlist'"," "),strlen("`varlist'") - strpos("`thelist'"," "))
 	foreach v of varlist `varlist2' {
-		count if `1' == 0 & `touse'
-		matrix `rmat'[`i',1] = r(N)
-		count if `1' == 1 & `touse'
-		matrix `rmat'[`i',2] = r(N)
-		count if `v' == 0 & `1' == 0 & `touse'
-		matrix `rmat'[`i',3] = r(N)
-		count if `v' == 1 & `1' == 0 & `touse'
-		matrix `rmat'[`i',4] = r(N)
-		local ++i
-		count if `v' == 0 & `touse'
-		matrix `rmat'[`i',1] = r(N)
-		count if `v' == 1 & `touse'
-		matrix `rmat'[`i',2] = r(N)
-		count if `v' == 0 & `1' == 1 & `touse'
-		matrix `rmat'[`i',3] = r(N)
-		count if `v' == 1 & `1' == 1 & `touse'
-		matrix `rmat'[`i',4] = r(N)
-		local ++i
-		local ++i
-	}
-	// matrix rownames `rmat' = `varlist2'
-	matrix colnames `rmat' = ActualNeg ActualPos TrueNeg FalsePos
-	if "`print'" != "noprint" {
-		local form ", noheader"
-		if "`format'" != "" {
-			local form "`form format'"
+		tempname rmat_`v'
+		matrix `rmat'_`v' = J(2, 4,.)
+		local i 1
+		
+		qui {
+			count if `1' == 0 & `touse'
+			matrix `rmat'_`v'[`i',1] = r(N)
+			count if `1' == 1 & `touse'
+			matrix `rmat'_`v'[`i',2] = r(N)
+			count if `v' == 0 & `1' == 0 & `touse'
+			matrix `rmat'_`v'[`i',3] = r(N)
+			count if `v' == 1 & `1' == 0 & `touse'
+			matrix `rmat'_`v'[`i',4] = r(N)
+			local ++i
+			count if `v' == 0 & `touse'
+			matrix `rmat'_`v'[`i',1] = r(N)
+			count if `v' == 1 & `touse'
+			matrix `rmat'_`v'[`i',2] = r(N)
+			count if `v' == 0 & `1' == 1 & `touse'
+			matrix `rmat'_`v'[`i',3] = r(N)
+			count if `v' == 1 & `1' == 1 & `touse'
+			matrix `rmat'_`v'[`i',4] = r(N)
 		}
-		matrix list `rmat' `form'
+
+		// matrix rownames `rmat' = `varlist2'
+		matrix colnames `rmat'_`v' = ActualNeg ActualPos TrueNeg FalsePos
+		if "`print'" != "noprint" {
+			local form ", noheader"
+			if "`format'" != "" {
+				local form "`form format'"
+			}
+			di as result "Results for test variable `v'"
+			matrix list `rmat'_`v' `form'
+			di `sp'
+		}
+		if "`matrix'" != "" {
+			matrix `matrix' = `rmat'_`v'
+		}
+		return matrix rmat_`v' = `rmat'_`v'
 	}
-	if "`matrix'" != "" {
-		matrix `matrix' = `rmat'
-	}
-	return matrix rmat = `rmat'
 	return local varname `varlist'
+
 end
 
