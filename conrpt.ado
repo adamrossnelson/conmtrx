@@ -10,7 +10,9 @@ program define conrpt, rclass byable(recall)
 	// binary. Subsequent arguments varlist of one or more vars which also must
 	// be binary. Includes support for if and in qualifiers.
 	syntax varlist(min=2 numeric) [if] [in] ///
-	[,noPRINT noCOIN noLEGEND perfect PROBs(string asis) FORmat(passthru) MATrix(string)]
+	[,noPRINT noCOIN noLEGEND perfect ///
+	title(string) PROBs(string asis) ///
+	MATrix(string)]
 	
 	local sp char(13) char(10) // Define spacer.
 
@@ -79,98 +81,135 @@ program define conrpt, rclass byable(recall)
 		}
 	}
 	tempname rmat
-	matrix `rmat' = J(22, `nvar' + `totcoins' - 1,.)
+	matrix `rmat' = J(18, `nvar' + `totcoins' - 1,.)
 	local i = 1
 	foreach v of varlist `varlist3' {
 		qui {
+			
 			// ObservedPos   (number of) positive samples (P)
-			count if `1' == 1 & `touse'
-			matrix `rmat'[1,`i'] = r(N)
+			count if `1' == 1 & `touse'		
+			local ObservedPos = r(N)
 			// ObservedNeg   (number of) negative samples (N)
 			count if `1' == 0 & `touse'
-			matrix `rmat'[2,`i'] = r(N)
+			local ObservedNeg = r(N)
 			// ObservedTot
-			matrix `rmat'[3,`i'] = `rmat'[1,`i'] + `rmat'[2,`i']
+			local ObservedTot = `ObservedPos' + `ObservedNeg'
+			// Prevalence                                       // (ObservedPos/ObservedTot)
+			local Prevalence : di %-9.6g (`ObservedPos' / `ObservedTot')                * 100
 
 			// TestedPos
 			count if `v' == 1 & `touse'
-			matrix `rmat'[4,`i'] = r(N)
+			matrix `rmat'[1,`i'] = r(N)
+			local TestedPos = r(N)
 			// TestedNeg
 			count if `v' == 0 & `touse'
-			matrix `rmat'[5,`i'] = r(N)
+			matrix `rmat'[2,`i'] = r(N)
+			local TestedNeg = r(N)
 			// TestedTot
-			matrix `rmat'[6,`i'] = `rmat'[4,`i'] + `rmat'[5,`i']
+			local TestedTot = `TestedPos' + `TestedNeg'
+			matrix `rmat'[3,`i'] = `TestedTot'
 
 			// TruePos        // (TP) eqv. with hit
 			count if `v' == 1 & `1' == 1 & `touse'
-			matrix `rmat'[7,`i'] = r(N)
+			matrix `rmat'[4,`i'] = r(N)
+			local TruePos = r(N)
 			// TrueNeg        // (TN) eqv. with correct rejection
 			count if `v' == 0 & `1' == 0 & `touse'
-			matrix `rmat'[8,`i'] = r(N)
+			matrix `rmat'[5,`i'] = r(N)
+			local TrueNeg = r(N)
 			// FalsePos       // (FP) eqv. with false alarm, Type I error
 			count if `v' == 1 & `1' == 0 & `touse'
-			matrix `rmat'[9,`i'] = r(N)
+			matrix `rmat'[6,`i'] = r(N)
+			local FalsePos = r(N)
 			// FalseNeg      // (FN) eqv. with miss, Type II error
 			count if `v' == 0 & `1' == 1 & `touse'
-			matrix `rmat'[10,`i'] = r(N)
-
-			// Prevalence                                       // (ObservedPos/ObservedTot)
-			matrix `rmat'[11,`i'] = (`rmat'[1,`i']  / `rmat'[3,`i'])                    * 100
+			matrix `rmat'[7,`i'] = r(N)
+			local FalseNeg = r(N)
+			
 			// Sensitivity aka true positive rate (TPR)         // (TruePos/ObservedPos)
-			matrix `rmat'[12,`i'] = (`rmat'[7,`i']  / `rmat'[1,`i'])                    * 100
+			local Sensitivity : di %-6.2f (`TruePos' / `ObservedPos')                   * 100
+			matrix `rmat'[8,`i'] = `Sensitivity'
 			// Specificity aka true negative rate (TNR)         // (TrueNeg/ObservedNeg)
-			matrix `rmat'[13,`i'] = (`rmat'[8,`i']  / `rmat'[2,`i'])                    * 100
+			local Specificity : di %-6.2f (`TrueNeg' / `ObservedNeg')                   * 100
+			matrix `rmat'[9,`i'] = `Specificity'
 
 			// PosPredVal aka precision                         // (TruePos/(TruePos+FalsePos))
-			matrix `rmat'[14,`i'] = (`rmat'[7,`i']  / (`rmat'[7,`i'] + `rmat'[9,`i']))  * 100
+			local PosPredVal : di %-6.2f (`TruePos' / (`TruePos' + `FalsePos'))          * 100
+			matrix `rmat'[10,`i'] = `PosPredVal'
 			// NegPredVal aka ...                               // (TrueNeg/(TrueNeg+FalseNeg))
-			matrix `rmat'[15,`i'] = (`rmat'[8,`i']  / (`rmat'[8,`i'] + `rmat'[10,`i'])) * 100
+			local NegPredVal : di %-6.2f (`TrueNeg' / (`TrueNeg' + `FalseNeg'))         * 100
+			matrix `rmat'[11,`i'] = `NegPredVal'
 			// FalsePosRt aka Inverse Specificity or fall-out   // (FalsePos/ObservedNeg)
-			matrix `rmat'[16,`i'] = (`rmat'[9,`i']  / `rmat'[2,`i'])                    * 100
+			local FalsePosRt : di %-6.2f (`FalsePos' / `ObservedNeg')                   * 100
+			matrix `rmat'[12,`i'] = `FalsePosRt'
 			// FalseNegRt aka Inverse Sensitivity               // (FalseNeg/(FalseNeg+TruePos))
-			matrix `rmat'[17,`i'] = (`rmat'[10,`i'] / (`rmat'[10,`i'] + `rmat'[7,`i'])) * 100
+			local FalseNegRt : di %-8.2f (`FalseNeg' / (`FalseNeg' + `TruePos'))        * 100
+			matrix `rmat'[13,`i'] = `FalseNegRt'
 
 			// CorrectRt aka Accuracy                           // (TruePos+TrueNeg)/TestedTot
-			matrix `rmat'[18,`i'] = ((`rmat'[7,`i'] + `rmat'[8,`i'])  / `rmat'[6,`i'])  * 100
+			local CorrectRt : di %-6.2f (`TruePos' + `TrueNeg') / `TestedTot'           * 100
+			matrix `rmat'[14,`i'] = `CorrectRt'
 			// IncorrectRt                                      // (FalsePos+FalseNeg)/TestedTot
-			matrix `rmat'[19,`i'] = ((`rmat'[9,`i'] + `rmat'[10,`i']) / `rmat'[6,`i'])  * 100
+			local IncorrectRt : di %-6.2f (`FalsePos' + `FalseNeg') / `TestedTot'       * 100
+			matrix `rmat'[15,`i'] = `IncorrectRt'
 			
 			// ROCArea
 			roctab `1' `v'
-			return local rocarea r(area)
-			matrix `rmat'[20,`i'] = r(area)
+			local rocarea r(area)
+			local rocarea : di %-6.4f `rocarea'
+			matrix `rmat'[16,`i'] = `rocarea'
 			
 			// F1 Score aka harmonic mean of precision and sensitivity
 			// 2TruePos / (2TruePos + FalsePos + FalseNeg)
-			matrix `rmat'[21,`i'] = (2 * `rmat'[7,`i']) / ((2 * `rmat'[7,`i']) + (`rmat'[9,`i'] + `rmat'[10,`i']))
-			// Matthews correlation coefficient (MattCorCoef)
-			matrix `rmat'[22,`i'] = ///
-			((`rmat'[7,`i'] * `rmat'[8,`i']) - (`rmat'[9,`i'] * `rmat'[10,`i'])) / /// (TruePos * TrueNeg) - (FalsePos * FalseNeg)
-			sqrt((`rmat'[7,`i'] + `rmat'[9,`i'])  * /// (TruePos + FalsePos)
-			     (`rmat'[7,`i'] + `rmat'[10,`i']) * /// (TruePos + FalseNeg)
-				 (`rmat'[8,`i'] + `rmat'[9,`i'])  * /// (TrueNeg + FalsePos)
-				 (`rmat'[8,`i'] + `rmat'[10,`i']))   // (TrueNeg + FalseNeg)   
+			local F1Score : di %-6.4f (2 * `TruePos' / (2 * `TruePos' + `FalsePos' + `FalseNeg'))
+			matrix `rmat'[17,`i'] = `F1Score'
 
+			// Matthews correlation coefficient (MattCorCoef)
+			local MattCorCoef : di %-6.4f  ///
+			((`TruePos' * `TrueNeg') - (`FalsePos' * `FalseNeg')) / ///
+			sqrt( (`TruePos' + `FalsePos') * ///
+			      (`TruePos' + `FalseNeg') * ///
+				  (`TrueNeg' + `FalsePos') * ///
+				  (`TrueNeg' + `FalseNeg') )
+			matrix `rmat'[18,`i'] = `MattCorCoef'
 			// For reference: https://en.wikipedia.org/wiki/Sensitivity_and_specificity
 		}
 		local ++i
 	}
 
 	matrix colnames `rmat' = `varlist3'
-	matrix rownames `rmat' = ObservedPos ObservedNeg ObservedTot TestedPos TestedNeg TestedTot ///
+	matrix rownames `rmat' = TestedPos TestedNeg TestedTot ///
 	TruePos TrueNeg FalsePos FalseNeg ///
-	Prevalence Sensitivity Specificity PosPredVal NegPredVal ///
+	Sensitivity Specificity PosPredVal NegPredVal ///
 	FalsePosRt FalseNegRt CorrectRt IncorrectRt ROCArea F1Score MattCorCoef
 	if "`print'" != "noprint" {
-		local form ", noheader"
-		if "`format'" != "" {
-			local form "`form' `format'"
+		if "`title'" == "" {
+			di ""
+			di in smcl in gr "{ul:Referenced / Observed Variable : `1'}"
 		}
-		matrix list `rmat' `form'
+		else {
+			di ""
+			di in smcl in gr "{ul:`title'}"
+		}
+		matlist `rmat'
+		di ""
+		if strlen("`varlist3'") * 2 < 100 & strlen("`varlist3'") * 2 > 80 {
+			di "   Notes: ObservedPos: `ObservedPos', ObservedNeg: `ObservedNeg', & ObservedTot: `ObservedTot', Prevalence: `Prevalence'"
+		}
+		else if strlen("`varlist3'") * 2 < 81 & strlen("`varlist3'") * 2 > 49 {
+			di "   Notes: ObservedPos: `ObservedPos', ObservedNeg: `ObservedNeg', & "
+			di "   ObservedTot: `ObservedTot', Prevalence: `__'"
+		}
+		else if strlen("`varlist3'") * 2 < 50 {
+			di "   Notes: ObservedPos: `ObservedPos',"
+			di "   ObservedNeg: `ObservedNeg', & "
+			di "   ObservedTot: `ObservedTot',"
+			di "   Prevalence: `Prevalence'"
+		}
 
 		if "`legend'" != "nolegend" {
 			di ""
-			di "   {ul:Legend of Keywords, Terminology, & Calculations}"
+			di "   {ul:Keywords, Terminology, & Calculations - Quick References}"
 			di ""
 			di "   Prevalence  = ObservedPos/ObservedTot"
 			di "   Specificity = TrueNeg/ObservedNeg           Sensitivity = TruePos/ObservedPos"
@@ -182,17 +221,16 @@ program define conrpt, rclass byable(recall)
 			di "   FalsePosRt  = Inverse Specificity           FalseNegRt  = Inverse Sensitivity"
 			di ""
 		}
-
 	}
+
 	if "`matrix'" != "" {
 		matrix `matrix' = `rmat'
 	}
+
 	return matrix rmat = `rmat'              // Return matrix
-	
 	return local varnames `varlist'          // Return full varlist
 	return local testnames `varlist2'        // Return test variables
 	return local obsvar `1'                  // Return observed variable
-
 	restore
 end
 
