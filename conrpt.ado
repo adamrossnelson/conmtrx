@@ -76,45 +76,51 @@ program define conrpt, rclass byable(recall)
 	local i = 1
 	foreach v of varlist `varlist3' {
 		qui {
-			// ObservedNeg
-			count if `1' == 0 & `touse'
-			matrix `rmat'[1,`i'] = r(N)
-			// ObservedPos
+			// ObservedPos   (number of) positive samples (P)
 			count if `1' == 1 & `touse'
+			matrix `rmat'[1,`i'] = r(N)
+			// ObservedNeg   (number of) negative samples (N)
+			count if `1' == 0 & `touse'
 			matrix `rmat'[2,`i'] = r(N)
 			// ObservedTot
 			matrix `rmat'[3,`i'] = `rmat'[1,`i'] + `rmat'[2,`i']
-			// TestedNeg
-			count if `v' == 0 & `touse'
-			matrix `rmat'[4,`i'] = r(N)
 			// TestedPos
 			count if `v' == 1 & `touse'
+			matrix `rmat'[4,`i'] = r(N)
+			// TestedNeg
+			count if `v' == 0 & `touse'
 			matrix `rmat'[5,`i'] = r(N)
 			// TestedTot
 			matrix `rmat'[6,`i'] = `rmat'[4,`i'] + `rmat'[5,`i']
-			// TrueNeg
-			count if `1' == 0 & `v' == 0 & `touse'
-			matrix `rmat'[7,`i'] = r(N)
-			// TruePos
+			// TruePos        // (TP) eqv. with hit
 			count if `1' == 1 & `v' == 1 & `touse'
+			matrix `rmat'[7,`i'] = r(N)
+			// TrueNeg        // (TN) eqv. with correct rejection
+			count if `1' == 0 & `v' == 0 & `touse'
 			matrix `rmat'[8,`i'] = r(N)
-			// FalseNeg
-			count if `v' == 0 & `1' == 1 & `touse'
-			matrix `rmat'[9,`i'] = r(N)
-			// FalsePos
+			// FalsePos       // (FP) eqv. with false alarm, Type I error
 			count if `v' == 1 & `1' == 0 & `touse'
+			matrix `rmat'[9,`i'] = r(N)
+			// FalseNeg      // (FN) eqv. with miss, Type II error
+			count if `v' == 0 & `1' == 1 & `touse'
 			matrix `rmat'[10,`i'] = r(N)
-			// Prevalence
-			matrix `rmat'[11,`i'] = `rmat'[2,`i'] / `rmat'[3,`i']
-			// Sensitivity aka true positive rate (TPR)
-			matrix `rmat'[12,`i'] = `rmat'[8,`i'] / `rmat'[2,`i']
-			// Specificity aka true negative rate
+
+			// Prevalence    // (ObservedPos/ObservedTot)
+			matrix `rmat'[11,`i'] = `rmat'[1,`i'] / `rmat'[3,`i']
+
+			// Sensitivity aka true positive rate (TPR) // (TruePos/ObservedPos)
+			matrix `rmat'[12,`i'] = `rmat'[7,`i'] / `rmat'[1,`i']
+			
+			// Specificity aka true negative rate       // (TrueNeg/ObservedNeg)
+			matrix `rmat'[13,`i'] = `rmat'[8,`i'] / `rmat'[2,`i']
 
 			// PosPredVal aka precision
 
-			// NegPredVal 
+			// NegPredVal aka ...
 
-			// False
+			// FalsePosRt
+
+			// FalseNegRt
 
 			// For reference: https://en.wikipedia.org/wiki/Sensitivity_and_specificity
 		}
@@ -122,8 +128,8 @@ program define conrpt, rclass byable(recall)
 	}
 
 	matrix colnames `rmat' = `varlist3'
-	matrix rownames `rmat' = ObservedNeg ObservedPos ObservedTot TestedNeg TestedPos TestedTot ///
-	TrueNeg TruePos FalseNeg FalsePos ///
+	matrix rownames `rmat' = ObservedPos ObservedNeg ObservedTot TestedPos TestedNeg TestedTot ///
+	TruePos TrueNeg FalsePos FalseNeg ///
 	Prevalence Sensitivity Specificity PosPredVal NegPredVal ///
 	FalsePosRt FalseNegRt CorrectRt IncorrectRt ROCArea
 	if "`print'" != "noprint" {
