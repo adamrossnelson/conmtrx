@@ -193,14 +193,15 @@ program define conrpt, rclass byable(recall)
 		}
 		matlist `rmat'
 		di ""
-		if strlen("`varlist3'") * 2 < 100 & strlen("`varlist3'") * 2 > 80 {
+
+		if strlen("`varlist3'") * 2 > 81 {
 			di "   Notes: ObservedPos: `ObservedPos', ObservedNeg: `ObservedNeg', & ObservedTot: `ObservedTot', Prevalence: `Prevalence'"
 		}
-		else if strlen("`varlist3'") * 2 < 81 & strlen("`varlist3'") * 2 > 49 {
+		else if strlen("`varlist3'") * 2 < 71 & strlen("`varlist3'") * 2 > 34 {
 			di "   Notes: ObservedPos: `ObservedPos', ObservedNeg: `ObservedNeg', & "
-			di "   ObservedTot: `ObservedTot', Prevalence: `__'"
+			di "   ObservedTot: `ObservedTot', Prevalence: `Prevalence'"
 		}
-		else if strlen("`varlist3'") * 2 < 50 {
+		else if strlen("`varlist3'") * 2 < 35 {
 			di "   Notes: ObservedPos: `ObservedPos',"
 			di "   ObservedNeg: `ObservedNeg', & "
 			di "   ObservedTot: `ObservedTot',"
@@ -222,6 +223,8 @@ program define conrpt, rclass byable(recall)
 			di ""
 		}
 	}
+	
+	di "{it:   - conrpt - }Command was a success."
 
 	if "`matrix'" != "" {
 		matrix `matrix' = `rmat'
