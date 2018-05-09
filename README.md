@@ -7,6 +7,13 @@ Also inspired by https://artax.karlin.mff.cuni.cz/r-help/library/caret/html/conf
 
 Another related resource https://www.statalist.org/forums/forum/general-stata-discussion/general/1371221-n-by-k-contingency-table-for-two-categorical-variable-sensitivity-specificity-ppv-npv-accuracy-calculations
 
+## See Also
+
+The `conmtrx` package is a wrapper for `classtabi`. Another package, `conrpt` provides more flexibility and additional options.
+
+* [Classtabi Information](https://ideas.repec.org/c/boc/bocode/s458127.html)
+* [Conrpt Information](https://github.com/adamrossnelson/conrpt)
+
 ## Installation
 
 Use the following to install from command line:
